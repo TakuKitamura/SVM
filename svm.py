@@ -1,93 +1,131 @@
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 from sklearn import datasets
 
+# Warning非表示
+# 参考: https://qiita.com/KEINOS/items/4c66eeda4347f8c13abb
+# import os
+# os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
 sess = tf.Session()
 
 iris = datasets.load_iris()
-x_vals = np.array([[x[0], x[3]] for x in iris.data])
-y_vals = np.array([1 if y==0 else -1 for y in iris.target])
 
-train_indices = np.random.choice(len(x_vals), round(len(x_vals)*0.8), replace=False)
-test_indices = np.array(list(set(range(len(x_vals))) - set(train_indices)))
+
+# ex.
+# [[5.1 0.2],
+#  [4.9 0.2],
+#  [4.7 0.2],
+# ]
+x_vals = np.array([[x[0], x[3]] for x in iris.data])
+
+# ex.
+# [1 -1 1 ]
+y_vals = np.array([[1] if y == 0 else [0] for y in iris.target])
+
+# print(x_vals, y_vals)
+
+
+# 乱数を用いてトレーニングデータを八割準備
+train_indices = \
+ np.random.choice(len(x_vals), round(len(x_vals) * 0.8), replace=False)
+
 x_vals_train = x_vals[train_indices]
-x_vals_test = x_vals[test_indices]
 y_vals_train = y_vals[train_indices]
+
+# x_vals_train = tf.constant(x_vals[train_indices], "float32")
+# y_vals_train = tf.constant(y_vals[train_indices], "float32")
+
+# print(x_vals_train, x_vals_train)
+
+# /Users/kitamurataku/.pyenv/versions/3.6.5/lib/python3.6/site-packages/tensorflow/contrib/layers/python/layers/feature_column.py
+# テストデータを二割準備
+test_indices = np.array(list(set(range(len(x_vals))) - set(train_indices)))
+
+x_vals_test = x_vals[test_indices]
 y_vals_test = y_vals[test_indices]
 
-batch_size = 100
 
-x_data = tf.placeholder(shape=[None, 2], dtype=tf.float32)
-y_target = tf.placeholder(shape=[None, 1], dtype=tf.float32)
+real_feature_columnA = tf.contrib.layers.real_valued_column('A')
 
-A = tf.Variable(tf.random_normal(shape=[2, 1]))
-b = tf.Variable(tf.random_normal(shape=[1, 1]))
+# real_feature_columnB = tf.contrib.layers.real_valued_column('B')
 
-model_output = tf.subtract(tf.matmul(x_data, A), b)
+# real_feature_columnC = tf.contrib.layers.real_valued_column('C')
 
-l2_norm = tf.constant([0.01])
-alpha = tf.constant([0.01])
-classification_term = tf.reduce_mean(tf.maximum(0., tf.subtract(1., tf.multiply(model_output, y_target))))
-loss = tf.add(classification_term, tf.multiply(alpha, l2_norm))
 
-prediction = tf.sign(model_output)
-accuracy = tf.reduce_mean(tf.cast(tf.equal(prediction, y_target), tf.float32))
+# sparse_feature_column = \
+#  tf.contrib.layers.sparse_column_with_hash_bucket("y", hash_bucket_size=100)
+# print(77777777)
+estimator = tf.contrib.learn.SVM(
+    example_id_column='example_id',
+    feature_columns=[real_feature_columnA],
+)
 
-my_opt = tf.train.GradientDescentOptimizer(0.01)
-train_step = my_opt.minimize(loss)
+# print(888888888)
 
-init = tf.global_variables_initializer()
-sess.run(init)
+# abc = tf.constant(0, "int32",[120,1])
+def input_fn_train():  # returns x, y
+    # print(abc)
+    # print(x_vals_train)
+    # print(y_vals)
+    # print(x_vals_train)
+    print(x_vals_train)
+    print(y_vals_train)
 
-loss_vec = []
-train_accuracy = []
-test_accuracy = []
-for i in range(500):
-    rand_index = np.random.choice(len(x_vals_train), size=batch_size)
-    rand_x = x_vals_train[rand_index]
-    rand_y = np.transpose([y_vals_train[rand_index]])
-    sess.run(train_step, feed_dict={x_data: rand_x, y_target: rand_y})
+    return {
+        'example_id': tf.constant([str(i) for i in range(120)]),
+        'A': tf.convert_to_tensor(x_vals_train),
+        # 'B': tf.convert_to_tensor(y_vals_train)
+    }, tf.constant(y_vals_train)
 
-    temp_loss = sess.run(loss, feed_dict={x_data: rand_x, y_target: rand_y})
-    loss_vec.append(temp_loss)
+def input_fn_eval():  # returns x, y
+    # print(abc)
+    # print(x_vals)
+    # print(y_vals)
+    return {
+        'example_id': tf.constant([str(i) for i in range(121, 150)]),
+        'A': tf.convert_to_tensor(x_vals_test),
+        # 'B': tf.convert_to_tensor(y_vals_test)
+    }, tf.constant(y_vals_test)
 
-    train_acc_temp = sess.run(accuracy, feed_dict={
-        x_data: x_vals_train,
-        y_target: np.transpose([y_vals_train])})
-    train_accuracy.append(train_acc_temp)
 
-    test_acc_temp = sess.run(accuracy, feed_dict={
-        x_data: x_vals_test,
-        y_target: np.transpose([y_vals_test])})
-    test_accuracy.append(test_acc_temp)
+def predict_input_fn():
+    return {
+        'example_id': tf.constant(['151']),
+        'A': tf.convert_to_tensor([[8, 0.25]]),
+        # 'B': tf.convert_to_tensor([[0]]),
+    }, None
 
-    if (i+1)%100==0:
-        print('Step # {} A = {}, b = {}'.format(str(i+1), str(sess.run(A)), str(sess.run(b))))
-        print('Loss = ' + str(temp_loss))
 
-[[a1], [a2]] = sess.run(A)
-[[b]] = sess.run(b)
-slope = -a2/a1
-y_intercept = b/a1
-x1_vals = [d[1] for d in x_vals]
+# def input_fn_eval():  # returns x, y
+#     x = x_vals_test
+#     y = y_vals_test
+#
+#     return x, y
 
-best_fit = []
-for i in x1_vals:
-    best_fit.append(slope*i+y_intercept)
+# print(type(input_fn_train()[0]))
+# steps = 1000
+# print(000000000)
+print(123)
+estimator.fit(input_fn=input_fn_train, steps=1000)
+print(456)
+# print(list(estimator.predict(input_fn=predict_input_fn)))
 
-setosa_x = [d[1] for i,d in enumerate(x_vals) if y_vals[i]  == 1]
-setosa_y = [d[0] for i,d in enumerate(x_vals) if y_vals[i]  == 1]
-not_setosa_x = [d[1] for i,d in enumerate(x_vals) if y_vals[i] == -1]
-not_setosa_y = [d[0] for i,d in enumerate(x_vals) if y_vals[i] == -1]
+estimator.evaluate(input_fn=input_fn_eval, steps=1000)
 
-#以上の内容をプロットする
-plt.plot(setosa_x, setosa_y, 'o', label='I. setosa')
-plt.plot(not_setosa_x, not_setosa_y, 'x', label='Non-setosa')
-plt.plot(x1_vals, best_fit, 'r-', label='Liner Separator', linewidth=3)
-plt.ylim([0, 10])
-plt.legend(loc='lower right')
-plt.title('Sepal Length vs Pedal Width')
-plt.xlabel('Pedal Width')
-plt.ylabel('Sepal Length')
-plt.show()
+print()
+
+results = list(estimator.predict(input_fn=predict_input_fn))
+logits = results[0]["logits"]
+
+with tf.Session() as sess:
+    probabilities = 1 / (1 + np.exp(-logits))
+    print(probabilities)
+# print(111111111)
+# estimator.evaluate(input_fn=input_fn_train)
+# print(222222222)
+# p0 = list(estimator.predict(x=10))
+# print(p0)
+# print(next(estimator.predict(x=10)))
+# print(3333333333)
