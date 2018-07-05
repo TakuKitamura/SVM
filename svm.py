@@ -3,6 +3,7 @@ import math
 
 import numpy as np
 import tensorflow as tf
+from matplotlib import pyplot as plt
 
 
 def return_kernel_estimator():
@@ -33,6 +34,7 @@ def return_input_fn(train_data, evaluate_data, predict_data):
     def input_fn_evaluate():
 
         x = {}
+        # print(evaluate_data)
         x['feature'] = tf.constant(evaluate_data[:, 0:-1], "float32")
         y = tf.constant(evaluate_data[:, -1], "int64")
 
@@ -63,36 +65,82 @@ def return_input_fn(train_data, evaluate_data, predict_data):
     #     print(probabilities)
 
 
-def cross_validation_estimate(data, train_steps, evaluate_steps):
+def cross_validation_estimate(data, train_steps, evaluate_steps, block_number):
     estimator = return_kernel_estimator()
-    split_data = np.array_split(data, 10)
-    sum_loss = 0
-    sum_accuracy = 0
-    for i in range(0, 10):
+    split_data = np.array_split(data, block_number)
+
+    test_data = split_data[0]
+
+    # print(test_data)
+
+    split_data = np.array_split(np.vstack(np.delete(split_data, 0, 0)), block_number - 1)
+
+    sum_evaluate_loss = 0
+    sum_evaluate_accuracy = 0
+
+    sum_test_loss = 0
+    sum_test_accuracy = 0
+
+    for i in range(0, block_number - 1):
         evaluate_data = split_data[i]
+
+        # print(evaluate_data)
+
         train_data = np.vstack(np.delete(split_data, i, 0))
+
+        ###
         input_fn_train, input_fn_evaluate, _ = return_input_fn(
             train_data, evaluate_data, None)
         estimator.fit(input_fn=input_fn_train, steps=train_steps)
         evaluate_results = estimator.evaluate(
             input_fn=input_fn_evaluate, steps=evaluate_steps)
-        accuracy = evaluate_results['accuracy']
-        loss = evaluate_results['loss']
+        evaluate_accuracy = evaluate_results['accuracy']
+        evaluate_loss = evaluate_results['loss']
 
-        print('Block{0} accuracy is {1}'.format(i, accuracy))
-        print('Block{0} loss is {1}'.format(i, loss))
+        print('Block{0} evaluate accuracy is {1}'.format(i, evaluate_accuracy))
+        print('Block{0} evaluate loss is {1}'.format(i, evaluate_loss))
 
-        sum_accuracy += accuracy
-        sum_loss += loss
+        sum_evaluate_accuracy += evaluate_accuracy
+        sum_evaluate_loss += evaluate_loss
 
         print()
+        ###
 
-    average_loss = sum_loss / 10
-    average_accuracy = sum_accuracy / 10
-    print('Total loss average is {0}', average_loss)
-    print('Total accuracy average is {0}', average_accuracy)
+        ###
+        input_fn_train, input_fn_evaluate, _ = return_input_fn(
+            train_data, test_data, None)
+        estimator.fit(input_fn=input_fn_train, steps=train_steps)
+        test_results = estimator.evaluate(
+            input_fn=input_fn_evaluate, steps=evaluate_steps)
+        test_accuracy = test_results['accuracy']
+        test_loss = test_results['loss']
 
-    return average_loss, average_accuracy
+        print('Block{0} test accuracy is {1}'.format(i, test_accuracy))
+        print('Block{0} test loss is {1}'.format(i, test_loss))
+
+        sum_test_accuracy += test_accuracy
+        sum_test_loss += test_loss
+
+        print()
+        ###
+
+    ###
+    evaluate_average_loss = sum_evaluate_loss / block_number
+    evaluate_average_accuracy = sum_evaluate_accuracy / block_number
+    print('Total evaluate loss average is {0}', evaluate_average_loss)
+    print('Total evaluate accuracy average is {0}', evaluate_average_accuracy)
+    print()
+    ###
+
+    ###
+    test_average_loss = sum_test_loss / block_number
+    test_average_accuracy = sum_test_accuracy / block_number
+    print('Total test loss average is {0}', test_average_loss)
+    print('Total test accuracy average is {0}', test_average_accuracy)
+    print()
+    ###
+
+    return evaluate_average_loss, evaluate_average_accuracy, test_average_loss, test_average_accuracy
 
 # Warning非表示
 # 参考: https://qiita.com/KEINOS/items/4c66eeda4347f8c13abb
@@ -110,10 +158,43 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 data = np.array(
     np.loadtxt("/Users/kitamurataku/work/SVM/tmp.csv", delimiter=","), "int64")
 
-np.random.shuffle(data)
 
-cross_validation_estimate(data, 2000, 100)
-#
+
+target_data_length_x = np.array([])
+evaluate_average_loss_y = np.array([])
+test_average_loss_y = np.array([])
+
+division_number = 400
+for i in range(1, division_number + 1):
+    np.random.shuffle(data)
+    split_data = np.array_split(data, division_number)
+    target_data = np.vstack(split_data[:i])
+    target_data_length = len(target_data)
+    evaluate_average_loss, evaluate_average_accuracy, test_average_loss, test_average_accuracy = cross_validation_estimate(target_data, 2000, 100, 10)
+    print('Data length is {0}', target_data_length)
+    print()
+    print('Loss evaluate average is {0}', evaluate_average_loss)
+    print('Accuracy evaluate average is {0}', evaluate_average_accuracy)
+    print()
+    print('Loss test average is {0}', test_average_loss)
+    print('Accuracy test average is {0}', test_average_accuracy)
+
+    print()
+    target_data_length_x = np.append(target_data_length_x, target_data_length)
+    evaluate_average_loss_y = np.append(evaluate_average_loss_y, evaluate_average_loss)
+    test_average_loss_y = np.append(test_average_loss_y, test_average_loss)
+
+x = target_data_length_x
+y1 = evaluate_average_loss_y
+y2 = test_average_loss_y
+
+plt.scatter(x , y1)
+plt.scatter(x , y2)
+plt.plot(x, np.poly1d(np.polyfit(x, y1, 3))(x), label='d=3')
+plt.plot(x, np.poly1d(np.polyfit(x, y2, 3))(x), label='d=3')
+
+plt.show()
+
 # analysis_data = data
 #
 # np.random.shuffle(analysis_data)
