@@ -1,131 +1,123 @@
-# import matplotlib.pyplot as plt
+import os
+import math
+
 import numpy as np
 import tensorflow as tf
 from sklearn import datasets
 
 # Warning非表示
 # 参考: https://qiita.com/KEINOS/items/4c66eeda4347f8c13abb
-# import os
-# os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+# TODO tf.contrib.learnは非推薦なので修正する。
+# https://github.com/tensorflow/tensorflow/blob/r1.8/tensorflow/contrib/learn/README.md
+# deprecated関数を使用していることによるWarningを非表示
+tf.logging.set_verbosity(tf.logging.ERROR)
 
 sess = tf.Session()
 
-iris = datasets.load_iris()
+# iris = datasets.load_iris()
 
 
-# ex.
-# [[5.1 0.2],
-#  [4.9 0.2],
-#  [4.7 0.2],
-# ]
-x_vals = np.array([[x[0], x[3]] for x in iris.data])
+# data = iris.data
+data = np.array(np.loadtxt("/Users/kitamurataku/work/SVM/tmp.csv", delimiter=","))
+data_length = len(data)
+# print(data)
+# data_type_flag = iris.target
 
-# ex.
-# [1 -1 1 ]
-y_vals = np.array([[1] if y == 0 else [0] for y in iris.target])
+# 各データの分類 (0: 'setosa', 1: 'versicolor', 2: 'virginica')
+# decision_flag = np.array([[1] if y == 0 else [0] for y in data_type_flag])
 
-# print(x_vals, y_vals)
+# analysis_data = np.c_[data, decision_flag]
 
 
-# 乱数を用いてトレーニングデータを八割準備
-train_indices = \
- np.random.choice(len(x_vals), round(len(x_vals) * 0.8), replace=False)
+analysis_data = data
+# np.random.shuffle(analysis_data)
+np.random.shuffle(analysis_data)
 
-x_vals_train = x_vals[train_indices]
-y_vals_train = y_vals[train_indices]
+# [[7.6 3.  6.6 2.1 0. ]
+# [6.  3.  4.8 1.8 0. ]
+# [4.4 2.9 1.4 0.2 1. ]
+# [6.7 3.  5.  1.7 0. ]
+# [5.9 3.  5.1 1.8 0. ]]
 
-# x_vals_train = tf.constant(x_vals[train_indices], "float32")
-# y_vals_train = tf.constant(y_vals[train_indices], "float32")
+train_data_rate = 0.8
 
-# print(x_vals_train, x_vals_train)
+if train_data_rate > 0 and train_data_rate < 1:
+    split_index = math.floor(data_length * train_data_rate)
+    train_data = analysis_data[:split_index]
+    evaluate_data = analysis_data[split_index:]
 
-# /Users/kitamurataku/.pyenv/versions/3.6.5/lib/python3.6/site-packages/tensorflow/contrib/layers/python/layers/feature_column.py
-# テストデータを二割準備
-test_indices = np.array(list(set(range(len(x_vals))) - set(train_indices)))
+    if len(train_data) == 0 or len(evaluate_data) == 0:
+        raise ValueError("トレイニング用のデータ割合が不正です。")
+else:
+    raise ValueError("トレイニング用のデータ割合が不正です。")
 
-x_vals_test = x_vals[test_indices]
-y_vals_test = y_vals[test_indices]
+# column_names = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
+column_names = ['year', 'month', 'day', 'week_day', 'open', 'high', 'low', 'close', 'volume']
 
+def return_input_fn(train_data, evaluate_data, predict_data, column_names, steps):
 
-real_feature_columnA = tf.contrib.layers.real_valued_column('A')
+    train_data_length = len(train_data)
+    evaluate_data_length = len(evaluate_data)
+    column_names_length = len(column_names)
 
-# real_feature_columnB = tf.contrib.layers.real_valued_column('B')
+    def input_fn_train():  # returns x, y
+        x = {'example_id': tf.constant([str(i) for i in range(train_data_length)])}
+        for i in range(column_names_length):
+            x[column_names[i]] = tf.convert_to_tensor(train_data[:, i])
 
-# real_feature_columnC = tf.contrib.layers.real_valued_column('C')
+        y = tf.constant(train_data[:, -1])
 
+        return x, y
 
-# sparse_feature_column = \
-#  tf.contrib.layers.sparse_column_with_hash_bucket("y", hash_bucket_size=100)
-# print(77777777)
-estimator = tf.contrib.learn.SVM(
-    example_id_column='example_id',
-    feature_columns=[real_feature_columnA],
-)
+    def input_fn_evaluate():  # returns x, y
+        x = {'example_id': tf.constant([str(i) for i in range(train_data_length + 1 ,train_data_length + column_names_length)])}
+        for i in range(column_names_length):
+            x[column_names[i]] = tf.convert_to_tensor(evaluate_data[:, i])
 
-# print(888888888)
+        y = tf.constant(evaluate_data[:, -1])
 
-# abc = tf.constant(0, "int32",[120,1])
-def input_fn_train():  # returns x, y
-    # print(abc)
-    # print(x_vals_train)
-    # print(y_vals)
-    # print(x_vals_train)
-    print(x_vals_train)
-    print(y_vals_train)
+        return x, y
 
-    return {
-        'example_id': tf.constant([str(i) for i in range(120)]),
-        'A': tf.convert_to_tensor(x_vals_train),
-        # 'B': tf.convert_to_tensor(y_vals_train)
-    }, tf.constant(y_vals_train)
+    def input_fn_predict():
+        x = {'example_id': tf.constant([str(train_data_length + column_names_length + 1)])}
+        for i in range(column_names_length):
+            x[column_names[i]] = tf.convert_to_tensor(predict_data[i])
 
-def input_fn_eval():  # returns x, y
-    # print(abc)
-    # print(x_vals)
-    # print(y_vals)
-    return {
-        'example_id': tf.constant([str(i) for i in range(121, 150)]),
-        'A': tf.convert_to_tensor(x_vals_test),
-        # 'B': tf.convert_to_tensor(y_vals_test)
-    }, tf.constant(y_vals_test)
+        y = None
 
+        return x, y
 
-def predict_input_fn():
-    return {
-        'example_id': tf.constant(['151']),
-        'A': tf.convert_to_tensor([[8, 0.25]]),
-        # 'B': tf.convert_to_tensor([[0]]),
-    }, None
+    # if mode == "train":
+    #     return input_fn_train
+    # elif mode == "eval":
+    #     return input_fn_eval
+    # elif mode == "predict":
+    #     return input_fn_predict
+    # else:
+    #     raise ValueError("modeが不適切です。")
 
+    feature_columns =[tf.contrib.layers.real_valued_column(name) for name in column_names]
 
-# def input_fn_eval():  # returns x, y
-#     x = x_vals_test
-#     y = y_vals_test
-#
-#     return x, y
+    estimator = tf.contrib.learn.SVM(
+        example_id_column='example_id',
+        feature_columns=feature_columns,
+    )
 
-# print(type(input_fn_train()[0]))
-# steps = 1000
-# print(000000000)
-print(123)
-estimator.fit(input_fn=input_fn_train, steps=1000)
-print(456)
-# print(list(estimator.predict(input_fn=predict_input_fn)))
+    estimator.fit(input_fn=input_fn_train, steps=steps)
+    print(estimator.evaluate(input_fn=input_fn_evaluate, steps=steps))
 
-estimator.evaluate(input_fn=input_fn_eval, steps=1000)
+    results = list(estimator.predict(input_fn=input_fn_predict))
+    print(results)
+    logits = results[0]["logits"]
 
-print()
+    with tf.Session() as sess:
+        probabilities = 1 / (1 + np.exp(-logits))
+        print(probabilities)
+# column_names = ['year', 'month', 'day', 'week_day', 'open', 'high', 'low', 'close', 'volume']
 
-results = list(estimator.predict(input_fn=predict_input_fn))
-logits = results[0]["logits"]
+predict_data = np.array([[2016], [1], [12], [1], [6800], [6864], [6755], [6755], [12126300]])
 
-with tf.Session() as sess:
-    probabilities = 1 / (1 + np.exp(-logits))
-    print(probabilities)
-# print(111111111)
-# estimator.evaluate(input_fn=input_fn_train)
-# print(222222222)
-# p0 = list(estimator.predict(x=10))
-# print(p0)
-# print(next(estimator.predict(x=10)))
-# print(3333333333)
+for i in range(0, 100):
+    return_input_fn(train_data, evaluate_data, predict_data, column_names, 100)
