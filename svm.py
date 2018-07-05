@@ -63,28 +63,38 @@ def return_input_fn(train_data, evaluate_data, predict_data, column_names, steps
     column_names_length = len(column_names)
 
     def input_fn_train():  # returns x, y
-        x = {'example_id': tf.constant([str(i) for i in range(train_data_length)])}
-        for i in range(column_names_length):
-            x[column_names[i]] = tf.convert_to_tensor(train_data[:, i])
+        # x = {'example_id': tf.constant([str(i) for i in range(train_data_length)])}
+        # for i in range(column_names_length):
+        #     x[column_names[i]] = tf.convert_to_tensor(train_data[:, i])
 
-        y = tf.constant(train_data[:, -1])
+        # x = {'feature': tf.constant(train_data[:, 0:-1])}
+        x = {}
+        x['feature'] = tf.constant(train_data[:, 0:-1], "float32")
+
+        y = tf.constant(train_data[:, -1], "int64")
 
         return x, y
 
     def input_fn_evaluate():  # returns x, y
-        x = {'example_id': tf.constant([str(i) for i in range(train_data_length + 1 ,train_data_length + column_names_length)])}
-        for i in range(column_names_length):
-            x[column_names[i]] = tf.convert_to_tensor(evaluate_data[:, i])
+        # x = {'example_id': tf.constant([str(i) for i in range(train_data_length + 1 ,train_data_length + column_names_length)])}
+        # for i in range(column_names_length):
+        #     x[column_names[i]] = tf.convert_to_tensor(evaluate_data[:, i])
 
-        y = tf.constant(evaluate_data[:, -1])
+        x = {}
+        print(evaluate_data[:, 0:-1])
+        x['feature'] = tf.constant(evaluate_data[:, 0:-1], "float32")
+        y = tf.constant(evaluate_data[:, -1], "int64")
 
         return x, y
 
     def input_fn_predict():
-        x = {'example_id': tf.constant([str(train_data_length + column_names_length + 1)])}
-        for i in range(column_names_length):
-            x[column_names[i]] = tf.convert_to_tensor(predict_data[i])
+        # x = {'example_id': tf.constant([str(train_data_length + column_names_length + 1)])}
+        # for i in range(column_names_length):
+        #     x[column_names[i]] = tf.convert_to_tensor(predict_data[i])
 
+        x = {}
+        print(predict_data)
+        x['feature'] = tf.constant(predict_data, "float32")
         y = None
 
         return x, y
@@ -98,16 +108,34 @@ def return_input_fn(train_data, evaluate_data, predict_data, column_names, steps
     # else:
     #     raise ValueError("modeが不適切です。")
 
-    feature_columns =[tf.contrib.layers.real_valued_column(name) for name in column_names]
+    # feature_columns =[tf.contrib.layers.real_valued_column(name) for name in column_names]
 
-    estimator = tf.contrib.learn.SVM(
-        example_id_column='example_id',
-        feature_columns=feature_columns,
-    )
+    optimizer = tf.train.FtrlOptimizer(learning_rate=0.1)
 
-    estimator.fit(input_fn=input_fn_train, steps=steps)
-    print(estimator.evaluate(input_fn=input_fn_evaluate, steps=steps))
+    kernel_mapper = tf.contrib.kernel_methods.RandomFourierFeatureMapper(
+        input_dim=9, output_dim=1)
 
+    kernel_mappers = {tf.contrib.layers.real_valued_column('feature'): [kernel_mapper]}
+
+    # for column in feature_columns:
+    #     kernel_mappers[column] = [kernel_mapper]
+
+    # print(kernel_mappers)
+    estimator = tf.contrib.kernel_methods.KernelLinearClassifier(
+        feature_columns=[], optimizer=optimizer, kernel_mappers=kernel_mappers)
+
+
+    # estimator = tf.contrib.learn.SVM(
+    #     example_id_column='example_id',
+    #     feature_columns=feature_columns,
+    # )
+
+    # print(123)
+    estimator.fit(input_fn=input_fn_train, steps=2000)
+
+    # print(456)
+    print(estimator.evaluate(input_fn=input_fn_evaluate, steps=1))
+    # print(789)
     results = list(estimator.predict(input_fn=input_fn_predict))
     print(results)
     logits = results[0]["logits"]
@@ -117,7 +145,7 @@ def return_input_fn(train_data, evaluate_data, predict_data, column_names, steps
         print(probabilities)
 # column_names = ['year', 'month', 'day', 'week_day', 'open', 'high', 'low', 'close', 'volume']
 
-predict_data = np.array([[2016], [1], [12], [1], [6800], [6864], [6755], [6755], [12126300]])
+predict_data = np.array([[2016, 1, 12, 1, 6800, 6864, 6755, 6755, 12126300]])
 
-for i in range(0, 100):
-    return_input_fn(train_data, evaluate_data, predict_data, column_names, 100)
+# for i in range(0, 100):
+return_input_fn(train_data, evaluate_data, predict_data, column_names, 1)
