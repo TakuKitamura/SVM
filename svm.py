@@ -2,8 +2,9 @@ import os
 import math
 
 import numpy as np
+import cupy as cp
 import tensorflow as tf
-from matplotlib import pyplot as plt
+# from matplotlib import pyplot as plt
 
 
 def return_kernel_estimator():
@@ -67,13 +68,13 @@ def return_input_fn(train_data, evaluate_data, predict_data):
 
 def cross_validation_estimate(data, train_steps, evaluate_steps, block_number):
     estimator = return_kernel_estimator()
-    split_data = np.array_split(data, block_number)
+    split_data = cp.array_split(data, block_number)
 
     test_data = split_data[0]
 
     # print(test_data)
 
-    split_data = np.array_split(np.vstack(np.delete(split_data, 0, 0)), block_number - 1)
+    split_data = cp.array_split(cp.vstack(np.delete(split_data, 0, 0)), block_number - 1)
 
     sum_evaluate_loss = 0
     sum_evaluate_accuracy = 0
@@ -86,7 +87,7 @@ def cross_validation_estimate(data, train_steps, evaluate_steps, block_number):
 
         # print(evaluate_data)
 
-        train_data = np.vstack(np.delete(split_data, i, 0))
+        train_data = cp.vstack(np.delete(split_data, i, 0))
 
         ###
         input_fn_train, input_fn_evaluate, _ = return_input_fn(
@@ -155,20 +156,20 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 
 # sess = tf.Session()
 #
-data = np.array(
+data = cp.array(
     np.loadtxt("/Users/kitamurataku/work/SVM/tmp.csv", delimiter=","), "int64")
 
 
 
-target_data_length_x = np.array([])
-evaluate_average_loss_y = np.array([])
-test_average_loss_y = np.array([])
+target_data_length_x = cp.array([])
+evaluate_average_loss_y = cp.array([])
+test_average_loss_y = cp.array([])
 
-division_number = 400
+division_number = 10
 for i in range(1, division_number + 1):
-    np.random.shuffle(data)
-    split_data = np.array_split(data, division_number)
-    target_data = np.vstack(split_data[:i])
+    cp.random.shuffle(data)
+    split_data = cp.array_split(data, division_number)
+    target_data = cp.vstack(split_data[:i])
     target_data_length = len(target_data)
     evaluate_average_loss, evaluate_average_accuracy, test_average_loss, test_average_accuracy = cross_validation_estimate(target_data, 2000, 100, 10)
     print('Data length is {0}'.format(target_data_length))
@@ -188,12 +189,16 @@ x = target_data_length_x
 y1 = evaluate_average_loss_y
 y2 = test_average_loss_y
 
-plt.scatter(x , y1)
-plt.scatter(x , y2)
-plt.plot(x, np.poly1d(np.polyfit(x, y1, 3))(x), label='d=3')
-plt.plot(x, np.poly1d(np.polyfit(x, y2, 3))(x), label='d=3')
+print(x)
+print(y1)
+print(y2)
 
-plt.show()
+# plt.scatter(x , y1)
+# plt.scatter(x , y2)
+# plt.plot(x, np.poly1d(np.polyfit(x, y1, 3))(x), label='d=3')
+# plt.plot(x, np.poly1d(np.polyfit(x, y2, 3))(x), label='d=3')
+#
+# plt.show()
 
 # analysis_data = data
 #
