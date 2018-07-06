@@ -10,7 +10,7 @@ def return_kernel_estimator(data):
     optimizer = tf.train.FtrlOptimizer(learning_rate=1.2)
 
     kernel_mapper = tf.contrib.kernel_methods.RandomFourierFeatureMapper(
-        input_dim=data[1]-1, output_dim=1)
+        input_dim=data.shape[1]-1, output_dim=1)
 
     kernel_mappers = {
         tf.contrib.layers.real_valued_column('feature'): [kernel_mapper]}
@@ -151,13 +151,13 @@ def show_learnig_graph(data):
 
     print(data)
     division_number = 10
-    features_number = data.shape[1] - 1
+    # features_number = data.shape[1] - 1
     for i in range(1, division_number + 1):
         np.random.shuffle(data)
         split_data = np.array_split(data, division_number)
         target_data = np.vstack(split_data[:i])
         target_data_length = len(target_data)
-        evaluate_average_loss, evaluate_average_accuracy, test_average_loss, test_average_accuracy = cross_validation_estimate(target_data, 2000, 100, 10, features_number)
+        evaluate_average_loss, evaluate_average_accuracy, test_average_loss, test_average_accuracy = cross_validation_estimate(target_data, 2000, 100, 10)
         print('Data length is {0}'.format(target_data_length))
         print()
         print('Loss evaluate average is {0}'.format(evaluate_average_loss))
@@ -216,14 +216,18 @@ def predict(analysis_data, predict_data, train_steps, evaluate_steps):
     print('Accuracy is {0}'.format(test_accuracy))
     print('Loss is {0}'.format(test_loss))
 
-    predict_results = estimator.predict(input_fn=input_fn_predict)
-    logits = predict_results["logits"]
+    predict_results = list(estimator.predict(input_fn=input_fn_predict))
+    print(predict_results)
+    logits = predict_results[0]["logits"]
+    classes = predict_results[0]["classes"]
 
-    print('Logits is {0}'.format(logits))
+    print('Classes is {0}'.format(classes))
+
+    print('Logits is {0}'.format(logits[0]))
 
     with tf.Session():
         probabilities = 1 / (1 + np.exp(-logits))
-        print('Probabilities is {0}'.format(probabilities))
+        print('Probabilities is {0}'.format(probabilities[0]))
 
 # Warning非表示
 # 参考: https://qiita.com/KEINOS/items/4c66eeda4347f8c13abb
@@ -239,5 +243,5 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 data = np.array(
     np.loadtxt("/Users/kitamurataku/work/SVM/data.csv", delimiter=","), "float64")
 
-show_learnig_graph(data)
-predict(data, [[2016,2,9,5.7,8.7,2.5,2,4.2,4.3,9.3,242,15.1,242,2]], 2000, 100)
+# show_learnig_graph(data)
+predict(data, [[2017,1,20,2.7,8,-1.6,1.5,2.2,2.2,6.8,232,11.9,32,232]], 2000, 100)
