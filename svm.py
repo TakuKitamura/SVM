@@ -127,16 +127,16 @@ def cross_validation_estimate(data, train_steps, evaluate_steps, block_number):
     ###
     evaluate_average_loss = sum_evaluate_loss / block_number
     evaluate_average_accuracy = sum_evaluate_accuracy / block_number
-    print('Total evaluate loss average is {0}', evaluate_average_loss)
-    print('Total evaluate accuracy average is {0}', evaluate_average_accuracy)
+    print('Total evaluate loss average is {0}'.format(evaluate_average_loss))
+    print('Total evaluate accuracy average is {0}'.format(evaluate_average_accuracy))
     print()
     ###
 
     ###
     test_average_loss = sum_test_loss / block_number
     test_average_accuracy = sum_test_accuracy / block_number
-    print('Total test loss average is {0}', test_average_loss)
-    print('Total test accuracy average is {0}', test_average_accuracy)
+    print('Total test loss average is {0}'.format(test_average_loss))
+    print('Total test accuracy average is {0}'.format(test_average_accuracy))
     print()
     ###
 
@@ -171,13 +171,13 @@ for i in range(1, division_number + 1):
     target_data = np.vstack(split_data[:i])
     target_data_length = len(target_data)
     evaluate_average_loss, evaluate_average_accuracy, test_average_loss, test_average_accuracy = cross_validation_estimate(target_data, 2000, 100, 10)
-    print('Data length is {0}', target_data_length)
+    print('Data length is {0}'.format(target_data_length))
     print()
-    print('Loss evaluate average is {0}', evaluate_average_loss)
-    print('Accuracy evaluate average is {0}', evaluate_average_accuracy)
+    print('Loss evaluate average is {0}'.format(evaluate_average_loss))
+    print('Accuracy evaluate average is {0}'.format(evaluate_average_accuracy))
     print()
-    print('Loss test average is {0}', test_average_loss)
-    print('Accuracy test average is {0}', test_average_accuracy)
+    print('Loss test average is {0}'.format(test_average_loss))
+    print('Accuracy test average is {0}'.format(test_average_accuracy))
 
     print()
     target_data_length_x = np.append(target_data_length_x, target_data_length)
