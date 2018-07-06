@@ -3,14 +3,14 @@ import math
 
 import numpy as np
 import tensorflow as tf
-# from matplotlib import pyplot as plt
+from matplotlib import pyplot as plt
 
 
-def return_kernel_estimator():
+def return_kernel_estimator(features_number):
     optimizer = tf.train.FtrlOptimizer(learning_rate=1.2)
 
     kernel_mapper = tf.contrib.kernel_methods.RandomFourierFeatureMapper(
-        input_dim=9, output_dim=1)
+        input_dim=features_number, output_dim=1)
 
     kernel_mappers = {
         tf.contrib.layers.real_valued_column('feature'): [kernel_mapper]}
@@ -65,8 +65,8 @@ def return_input_fn(train_data, evaluate_data, predict_data):
     #     print(probabilities)
 
 
-def cross_validation_estimate(data, train_steps, evaluate_steps, block_number):
-    estimator = return_kernel_estimator()
+def cross_validation_estimate(data, train_steps, evaluate_steps, block_number, features_number):
+    estimator = return_kernel_estimator(features_number)
     split_data = np.array_split(data, block_number)
 
     test_data = split_data[0]
@@ -156,21 +156,25 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 # sess = tf.Session()
 #
 data = np.array(
-    np.loadtxt("/Users/kitamurataku/work/SVM/tmp.csv", delimiter=","), "int64")
+    np.loadtxt("/Users/kitamurataku/work/SVM/data.csv", delimiter=","), "float64")
 
-
+# data = data[:, [0, 1, 2, 4, 5, 3]]
+# print(data)
 
 target_data_length_x = np.array([])
 evaluate_average_loss_y = np.array([])
 test_average_loss_y = np.array([])
 
+
+print(data)
 division_number = 10
+features_number = data.shape[1] - 1
 for i in range(1, division_number + 1):
     np.random.shuffle(data)
     split_data = np.array_split(data, division_number)
     target_data = np.vstack(split_data[:i])
     target_data_length = len(target_data)
-    evaluate_average_loss, evaluate_average_accuracy, test_average_loss, test_average_accuracy = cross_validation_estimate(target_data, 2000, 100, 10)
+    evaluate_average_loss, evaluate_average_accuracy, test_average_loss, test_average_accuracy = cross_validation_estimate(target_data, 2000, 100, 10, features_number)
     print('Data length is {0}'.format(target_data_length))
     print()
     print('Loss evaluate average is {0}'.format(evaluate_average_loss))
@@ -190,14 +194,14 @@ y2 = test_average_loss_y
 
 print(x)
 print(y1)
-print(y)
+print(y2)
 
-# plt.scatter(x , y1)
-# plt.scatter(x , y2)
-# plt.plot(x, np.poly1d(np.polyfit(x, y1, 3))(x), label='d=3')
-# plt.plot(x, np.poly1d(np.polyfit(x, y2, 3))(x), label='d=3')
-#
-# plt.show()
+plt.scatter(x , y1)
+plt.scatter(x , y2)
+plt.plot(x, np.poly1d(np.polyfit(x, y1, 3))(x), label='d=3')
+plt.plot(x, np.poly1d(np.polyfit(x, y2, 3))(x), label='d=3')
+
+plt.show()
 
 # analysis_data = data
 #
