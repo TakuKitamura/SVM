@@ -254,12 +254,12 @@ many_label_number = 0
 litte_data = data[np.where(data[:, -1] == little_label_number)]
 many_data = data[np.where(data[:, -1] == many_label_number)]
 
-data = np.r_[litte_data, many_data[0:len(litte_data)*10]]
+data = pr.scale(np.r_[litte_data, many_data[0:len(litte_data)]])
 
-sm = SMOTE()
-features, labels = sm.fit_sample(data[:, 0:-1], data[:, -1])
+# sm = SMOTE()
+# features, labels = sm.fit_sample(data[:, 0:-1], data[:, -1])
 
-data = np.c_[features, labels]
+# data = np.c_[features, labels]
 
 # print(data[-1])
 
@@ -271,5 +271,5 @@ data = np.c_[features, labels]
 
 # print(data)
 
-# show_learnig_graph(data, 10)
-predict(data, [[2017,10,25,14.5,19,11.2,17,2.2,1.3,3.9,442,7.9,441,331]], 2000, 100)
+show_learnig_graph(data, 10)
+# predict(data, [[2017,10,25,14.5,19,11.2,17,2.2,1.3,3.9,442,7.9,441,331]], 2000, 100)
