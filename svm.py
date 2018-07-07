@@ -254,7 +254,7 @@ many_label_number = 0
 litte_data = data[np.where(data[:, -1] == little_label_number)]
 many_data = data[np.where(data[:, -1] == many_label_number)]
 
-data = pr.scale(np.r_[litte_data, many_data[0:len(litte_data)]])
+data = pr.scale(np.r_[litte_data, many_data[0:len(litte_data)*4]])
 
 # sm = SMOTE()
 # features, labels = sm.fit_sample(data[:, 0:-1], data[:, -1])
