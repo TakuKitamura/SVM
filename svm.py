@@ -7,16 +7,17 @@ from matplotlib import pyplot as plt
 
 
 def return_kernel_estimator(data):
-    optimizer = tf.train.FtrlOptimizer(learning_rate=1.2)
+    optimizer = tf.train.FtrlOptimizer(
+        learning_rate=1.2, l1_regularization_strength=1.0, l2_regularization_strength=1.0)
 
     kernel_mapper = tf.contrib.kernel_methods.RandomFourierFeatureMapper(
-        input_dim=data.shape[1]-1, output_dim=1)
+        input_dim=data.shape[1]-1, output_dim=2000, stddev=0.5, name='rffm')
 
     kernel_mappers = {
         tf.contrib.layers.real_valued_column('feature'): [kernel_mapper]}
 
     estimator = tf.contrib.kernel_methods.KernelLinearClassifier(
-         n_classes=2, optimizer=optimizer, kernel_mappers=kernel_mappers)
+         n_classes=10, optimizer=optimizer, kernel_mappers=kernel_mappers)
 
     return estimator
 
