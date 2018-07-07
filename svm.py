@@ -3,7 +3,10 @@ import math
 
 import numpy as np
 import tensorflow as tf
+from sklearn import preprocessing as pr
+
 from matplotlib import pyplot as plt
+from imblearn.over_sampling import SMOTE
 
 
 def return_kernel_estimator(data):
@@ -17,7 +20,7 @@ def return_kernel_estimator(data):
         tf.contrib.layers.real_valued_column('feature'): [kernel_mapper]}
 
     estimator = tf.contrib.kernel_methods.KernelLinearClassifier(
-         n_classes=10, optimizer=optimizer, kernel_mappers=kernel_mappers)
+         n_classes=2, optimizer=optimizer, kernel_mappers=kernel_mappers)
 
     return estimator
 
@@ -144,14 +147,13 @@ def cross_validation_estimate(data, train_steps, evaluate_steps, block_number):
     return evaluate_average_loss, evaluate_average_accuracy, test_average_loss, test_average_accuracy
 
 
-def show_learnig_graph(data):
+def show_learnig_graph(data, division_number):
     target_data_length_x = np.array([])
     evaluate_average_loss_y = np.array([])
     test_average_loss_y = np.array([])
 
 
     print(data)
-    division_number = 10
     # features_number = data.shape[1] - 1
     for i in range(1, division_number + 1):
         np.random.shuffle(data)
@@ -219,16 +221,16 @@ def predict(analysis_data, predict_data, train_steps, evaluate_steps):
 
     predict_results = list(estimator.predict(input_fn=input_fn_predict))
     print(predict_results)
-    logits = predict_results[0]["logits"]
+    logits = np.average(predict_results[0]["logits"])
+    probabilities = np.average(predict_results[0]["probabilities"])
     classes = predict_results[0]["classes"]
 
     print('Classes is {0}'.format(classes))
 
-    print('Logits is {0}'.format(logits[0]))
+    print('Logits is {0}'.format(logits))
 
     with tf.Session():
-        probabilities = 1 / (1 + np.exp(-logits))
-        print('Probabilities is {0}'.format(probabilities[0]))
+        print('Probabilities is {0}'.format(probabilities))
 
 # Warning非表示
 # 参考: https://qiita.com/KEINOS/items/4c66eeda4347f8c13abb
@@ -239,10 +241,35 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 # deprecated関数を使用していることによるWarningを非表示
 tf.logging.set_verbosity(tf.logging.ERROR)
 
-# np.set_printoptions(threshold=np.inf)
+# np.set_printoptions(threshold=5000)
 
 data = np.array(
     np.loadtxt("/Users/kitamurataku/work/SVM/data.csv", delimiter=","), "float64")
 
-# show_learnig_graph(data)
-predict(data, [[2017,1,20,2.7,8,-1.6,1.5,2.2,2.2,6.8,232,11.9,32,232]], 2000, 100)
+# np.random.shuffle(data)
+#
+# little_label_number = 1
+# many_label_number = 0
+#
+# litte_data = data[np.where(data[:,-1] == little_label_number)]
+# many_data = data[np.where(data[:,-1] == many_label_number)]
+
+# data = pr.scale(np.r_[litte_data, many_data[0:len(litte_data)*3]])
+
+sm = SMOTE()
+features, labels = sm.fit_sample(data[:, 0:-1], data[:, -1])
+
+data = np.c_[features, labels]
+
+# print(data[-1])
+
+# print(features)
+#
+# print(labels)
+
+# data = pr.scale(data)
+
+# print(data)
+
+# show_learnig_graph(data, 10)
+predict(data, [[2017,10,25,14.5,19,11.2,17,2.2,1.3,3.9,442,7.9,441,331]], 2000, 100)
