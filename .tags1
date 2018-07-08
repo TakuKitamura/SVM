@@ -4,7 +4,6 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.8	//
-SVM	/Users/kitamurataku/work/SVM/README.md	/^# SVM$/;"	function	line:1
 os	/Users/kitamurataku/work/svm/svm.py	/^import os$/;"	namespace	line:1
 math	/Users/kitamurataku/work/svm/svm.py	/^import math$/;"	namespace	line:2
 np	/Users/kitamurataku/work/svm/svm.py	/^import numpy as np$/;"	namespace	line:4
