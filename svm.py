@@ -285,7 +285,7 @@ def predict(analysis_data, predict_data, train_steps, evaluate_steps):
         result = {"responseText": responseText}
         return make_response(jsonify(result))
 
-    api.run(host='0.0.0.0', port=3000)
+    api.run(host='localhost', port=3000)
 
 
 # Warning非表示
