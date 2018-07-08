@@ -647,21 +647,21 @@ print(data.shape)
 
 # data = pr.scale(data)
 
-unique, count = np.unique(data[:, -1], return_counts=True)
-
-little_label_number = unique[np.argmin(count)]
-many_label_number = unique[np.argmax(count)]
-
-# little_label_number = 1
-# many_label_number = 0
-# print(np.round(data[:, -1], 2), np.round(little_label_number, 2), np.round(many_label_number, 2))
-litte_data = data[np.where(data[:, -1] == little_label_number)]
-many_data = data[np.where(data[:, -1] == many_label_number)]
-
-data = np.r_[litte_data, many_data[0:int(len(litte_data))]]
-
-print(len(litte_data))
-print(len(many_data[0:int(len(litte_data))]))
+# unique, count = np.unique(data[:, -1], return_counts=True)
+#
+# little_label_number = unique[np.argmin(count)]
+# many_label_number = unique[np.argmax(count)]
+#
+# # little_label_number = 1
+# # many_label_number = 0
+# # print(np.round(data[:, -1], 2), np.round(little_label_number, 2), np.round(many_label_number, 2))
+# litte_data = data[np.where(data[:, -1] == little_label_number)]
+# many_data = data[np.where(data[:, -1] == many_label_number)]
+#
+# data = np.r_[litte_data, many_data[0:int(len(litte_data))]]
+#
+# print(len(litte_data))
+# print(len(many_data[0:int(len(litte_data))]))
 
 # sm = SMOTE()
 # features, labels = sm.fit_sample(data[:, 0:-1], data[:, -1])
