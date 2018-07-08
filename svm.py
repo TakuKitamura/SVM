@@ -7,12 +7,14 @@ from sklearn import preprocessing as pr
 
 from matplotlib import pyplot as plt
 from imblearn.over_sampling import SMOTE
+from flask import Flask, jsonify, abort, make_response, request
+import datetime
 
 
 def return_kernel_estimator(data):
     optimizer = tf.train.FtrlOptimizer(
         # learning_rate大きくすると過学習
-        learning_rate=10.0, l1_regularization_strength=1, l2_regularization_strength=1)
+        learning_rate=120.0, l1_regularization_strength=10, l2_regularization_strength=10)
 
     kernel_mapper = tf.contrib.kernel_methods.RandomFourierFeatureMapper(
         input_dim=data.shape[1]-1, output_dim=1, stddev=5, name='rffm')
@@ -149,6 +151,8 @@ def cross_validation_estimate(data, train_steps, evaluate_steps, block_number):
 
     return evaluate_average_loss, evaluate_average_accuracy, test_average_loss, test_average_accuracy
 
+api = Flask(__name__)
+
 
 def show_learnig_graph(data, division_number):
     target_data_length_x = np.array([])
@@ -235,6 +239,55 @@ def predict(analysis_data, predict_data, train_steps, evaluate_steps):
     with tf.Session():
         print('Delay probabilities is {0}'.format(probabilities))
 
+    @api.route('/predictKoseiLineDelay/<int:choiceTimeID>', methods=['GET'])
+    def get_user(choiceTimeID):
+        choiceTimeID
+        responseText = ""
+        if choiceTimeID == 1:
+            responseText += "今日の朝の湖西線が、"
+        elif choiceTimeID == 2:
+            responseText += "今日の昼の湖西線が、"
+        elif choiceTimeID == 3:
+            responseText += "今日の夕方の湖西線が、"
+        elif choiceTimeID == 4:
+            responseText += "明日の朝の湖西線が、"
+        elif choiceTimeID == 5:
+            responseText += "明日の昼の湖西線が、"
+        elif choiceTimeID == 6:
+            responseText += "明日の夕方の湖西線が、"
+        else:
+            responseText = "不具合が発生しております。復旧まで居間しばらくお待ち下さい。"
+            result = {"responseText": responseText}
+            return make_response(jsonify(result))
+
+        today = datetime.date.today()
+        predict_data = np.array([np.average(analysis_data[np.where(analysis_data[:, 1] == today.month)], axis = 0)], dtype = 'float32')[:,0:-1]
+        print(predict_data)
+        _, _, input_fn_predict = return_input_fn(None, None, predict_data)
+
+        predict_results = list(estimator.predict(input_fn=input_fn_predict))
+        print(predict_results)
+        delay_probabilities = predict_results[0]["probabilities"][1]
+
+        if delay_probabilities * 100 < 20:
+            responseText += "遅延する可能性はかなり低いです。"
+        elif delay_probabilities * 100 < 40:
+            responseText += "遅延する可能性は低いです。"
+        elif delay_probabilities * 100 < 60:
+            responseText += "遅延する可能性が有ります。"
+        elif delay_probabilities * 100 <= 100:
+            responseText += "遅延する可能性が高いです。"
+        else:
+            responseText = "不具合が発生しております。復旧まで居間しばらくお待ち下さい。"
+            result = {"responseText": responseText}
+            return make_response(jsonify(result))
+
+        result = {"responseText": responseText}
+        return make_response(jsonify(result))
+
+    api.run(host='0.0.0.0', port=3000)
+
+
 # Warning非表示
 # 参考: https://qiita.com/KEINOS/items/4c66eeda4347f8c13abb
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
@@ -250,7 +303,7 @@ data = np.array(
     np.loadtxt("/Users/kitamurataku/work/svm/new_data.csv", delimiter=",", skiprows=1), "float64")
 
 
-
+"""
 ### 横軸:月、縦軸:遅延回数の棒グラフ
 notDelay = data[:, 1][np.where(data[:, -1] == 0)]
 delay = data[:, 1][np.where(data[:, -1] == 1)]
@@ -590,52 +643,54 @@ plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], 
 
 # plt.show()
 
+"""
+
 data = np.c_[
-    # data[:, 0], # 年
-    # data[:, 1], # 月
-    # data[:, 2], # 日付
-    # data[:, 3], # 今津降水量の合計(mm)
-    # data[:, 4], # 南小松降水量の合計(mm)
-    # data[:, 5], # 大津降水量の合計(mm)
-    # data[:, 6], # 今津1時間降水量の最大(mm)
-    # data[:, 7], # 南小松1時間降水量の最大(mm)
-    # data[:, 8], # 大津1時間降水量の最大(mm)
+    data[:, 0], # 年
+    data[:, 1], # 月
+    data[:, 2], # 日付
+    data[:, 3], # 今津降水量の合計(mm)
+    data[:, 4], # 南小松降水量の合計(mm)
+    data[:, 5], # 大津降水量の合計(mm)
+    data[:, 6], # 今津1時間降水量の最大(mm)
+    data[:, 7], # 南小松1時間降水量の最大(mm)
+    data[:, 8], # 大津1時間降水量の最大(mm)
     data[:, 9], # 今津平均風速(m/s)
     data[:, 10],# 南小松平均風速(m/s)
     data[:, 11],# 大津平均風速(m/s)
-    # data[:, 12],# 今津日照時間(時間)
-    # data[:, 13],# 南小松日照時間(時間)
-    # data[:, 14],# 大津日照時間(時間)
-    # data[:, 15],# 今津最深積雪(cm)
-    # data[:, 16],# 今津降雪量合計(cm)
+    data[:, 12],# 今津日照時間(時間)
+    data[:, 13],# 南小松日照時間(時間)
+    data[:, 14],# 大津日照時間(時間)
+    data[:, 15],# 今津最深積雪(cm)
+    data[:, 16],# 今津降雪量合計(cm)
     data[:, 17],# 今津最大風速(m/s)
-    # data[:, 18],# 今津最大風速方角(m/s)
+    data[:, 18],# 今津最大風速方角(m/s)
     data[:, 19],# 今津最大瞬間風速(m/s)
-    # data[:, 20],# 今津最大瞬間風速方角(m/s)
-    # data[:, 21],# 今津最多風向(16方位)
+    data[:, 20],# 今津最大瞬間風速方角(m/s)
+    data[:, 21],# 今津最多風向(16方位)
     data[:, 22],# 南小松最大風速(m/s)
-    # data[:, 23],# 南小松最大風速方角(m/s)
+    data[:, 23],# 南小松最大風速方角(m/s)
     data[:, 24],# 南小松最大瞬間風速(m/s)
-    # data[:, 25],# 南小松最大瞬間風速方角(m/s)
-    # data[:, 26],# 南小松最多風向(16方位)
+    data[:, 25],# 南小松最大瞬間風速方角(m/s)
+    data[:, 26],# 南小松最多風向(16方位)
     data[:, 27],# 大津最大風速(m/s)
-    # data[:, 28],# 大津最大風速方角(m/s)
+    data[:, 28],# 大津最大風速方角(m/s)
     data[:, 29],# 大津最大瞬間風速(m/s)
-    # data[:, 30],# 大津最大瞬間風速方角(m/s)
-    # data[:, 31],# 大津最多風向(16方位)
-    # data[:, 32],# 今津平均気温(℃)
-    # data[:, 33],# 今津最高気温(℃)
-    # data[:, 34],# 今津最低気温(℃)
-    # data[:, 35],# 南小松平均気温(℃)
-    # data[:, 36],# 南小松最高気温(℃)
-    # data[:, 37],# 南小松最低気温(℃)
-    # data[:, 38],# 大津平均気温(℃)
-    # data[:, 39],# 大津最高気温(℃)
-    # data[:, 40],# 大津最低気温(℃)
-    # data[:, 41],# 今津10分間降水量の最大(mm)
-    # data[:, 42],# 南小松10分間降水量の最大(mm)
-    # data[:, 43],# 大津10分間降水量の最大(mm)
-    # data[:, 44],# 月の前半かフラグ(前半0)
+    data[:, 30],# 大津最大瞬間風速方角(m/s)
+    data[:, 31],# 大津最多風向(16方位)
+    data[:, 32],# 今津平均気温(℃)
+    data[:, 33],# 今津最高気温(℃)
+    data[:, 34],# 今津最低気温(℃)
+    data[:, 35],# 南小松平均気温(℃)
+    data[:, 36],# 南小松最高気温(℃)
+    data[:, 37],# 南小松最低気温(℃)
+    data[:, 38],# 大津平均気温(℃)
+    data[:, 39],# 大津最高気温(℃)
+    data[:, 40],# 大津最低気温(℃)
+    data[:, 41],# 今津10分間降水量の最大(mm)
+    data[:, 42],# 南小松10分間降水量の最大(mm)
+    data[:, 43],# 大津10分間降水量の最大(mm)
+    data[:, 44],# 月の前半かフラグ(前半0)
     data[:, 45],# 遅延フラグ(遅延1)
 ]
 

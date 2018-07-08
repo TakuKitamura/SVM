@@ -12,106 +12,21 @@ tf	/Users/kitamurataku/work/svm/svm.py	/^import tensorflow as tf$/;"	namespace	l
 pr	/Users/kitamurataku/work/svm/svm.py	/^from sklearn import preprocessing as pr$/;"	namespace	line:6
 plt	/Users/kitamurataku/work/svm/svm.py	/^from matplotlib import pyplot as plt$/;"	namespace	line:8
 SMOTE	/Users/kitamurataku/work/svm/svm.py	/^from imblearn.over_sampling import SMOTE$/;"	namespace	line:9
-return_kernel_estimator	/Users/kitamurataku/work/svm/svm.py	/^def return_kernel_estimator(data):$/;"	function	line:12
-return_input_fn	/Users/kitamurataku/work/svm/svm.py	/^def return_input_fn(train_data, evaluate_data, predict_data):$/;"	function	line:28
-input_fn_train	/Users/kitamurataku/work/svm/svm.py	/^    def input_fn_train():$/;"	function	line:30	function:return_input_fn
-input_fn_evaluate	/Users/kitamurataku/work/svm/svm.py	/^    def input_fn_evaluate():$/;"	function	line:38	function:return_input_fn
-input_fn_predict	/Users/kitamurataku/work/svm/svm.py	/^    def input_fn_predict():$/;"	function	line:47	function:return_input_fn
-cross_validation_estimate	/Users/kitamurataku/work/svm/svm.py	/^def cross_validation_estimate(data, train_steps, evaluate_steps, block_number):$/;"	function	line:74
-show_learnig_graph	/Users/kitamurataku/work/svm/svm.py	/^def show_learnig_graph(data, division_number):$/;"	function	line:152
-predict	/Users/kitamurataku/work/svm/svm.py	/^def predict(analysis_data, predict_data, train_steps, evaluate_steps):$/;"	function	line:194
-data	/Users/kitamurataku/work/svm/svm.py	/^data = np.array($/;"	variable	line:248
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 1][np.where(data[:, -1] == 0)]$/;"	variable	line:254
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 1][np.where(data[:, -1] == 1)]$/;"	variable	line:255
-month	/Users/kitamurataku/work/svm/svm.py	/^month = np.arange(12) + 1$/;"	variable	line:261
-delayFlagCount	/Users/kitamurataku/work/svm/svm.py	/^delayFlagCount = np.zeros(12, dtype=int)$/;"	variable	line:262
-month	/Users/kitamurataku/work/svm/svm.py	/^month = np.arange(12) + 1$/;"	variable	line:271
-delayFlagCount	/Users/kitamurataku/work/svm/svm.py	/^delayFlagCount = np.zeros(12, dtype=int)$/;"	variable	line:272
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 3][np.where(data[:, -1] == 0)]$/;"	variable	line:291
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 3][np.where(data[:, -1] == 1)]$/;"	variable	line:292
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 4][np.where(data[:, -1] == 0)]$/;"	variable	line:299
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 4][np.where(data[:, -1] == 1)]$/;"	variable	line:300
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 5][np.where(data[:, -1] == 0)]$/;"	variable	line:308
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 5][np.where(data[:, -1] == 1)]$/;"	variable	line:309
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 6][np.where(data[:, -1] == 0)]$/;"	variable	line:315
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 6][np.where(data[:, -1] == 1)]$/;"	variable	line:316
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 7][np.where(data[:, -1] == 0)]$/;"	variable	line:322
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 7][np.where(data[:, -1] == 1)]$/;"	variable	line:323
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 8][np.where(data[:, -1] == 0)]$/;"	variable	line:329
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 8][np.where(data[:, -1] == 1)]$/;"	variable	line:330
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 9][np.where(data[:, -1] == 0)]$/;"	variable	line:345
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 9][np.where(data[:, -1] == 1)]$/;"	variable	line:346
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 10][np.where(data[:, -1] == 0)]$/;"	variable	line:352
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 10][np.where(data[:, -1] == 1)]$/;"	variable	line:353
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 11][np.where(data[:, -1] == 0)]$/;"	variable	line:359
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 11][np.where(data[:, -1] == 1)]$/;"	variable	line:360
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 12][np.where(data[:, -1] == 0)]$/;"	variable	line:366
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 12][np.where(data[:, -1] == 1)]$/;"	variable	line:367
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 13][np.where(data[:, -1] == 0)]$/;"	variable	line:373
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 13][np.where(data[:, -1] == 1)]$/;"	variable	line:374
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 14][np.where(data[:, -1] == 0)]$/;"	variable	line:380
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 14][np.where(data[:, -1] == 1)]$/;"	variable	line:381
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 15][np.where(data[:, -1] == 0)]$/;"	variable	line:387
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 15][np.where(data[:, -1] == 1)]$/;"	variable	line:388
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 16][np.where(data[:, -1] == 0)]$/;"	variable	line:394
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 16][np.where(data[:, -1] == 1)]$/;"	variable	line:395
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 17][np.where(data[:, -1] == 0)]$/;"	variable	line:401
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 17][np.where(data[:, -1] == 1)]$/;"	variable	line:402
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 18][np.where(data[:, -1] == 0)]$/;"	variable	line:408
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 18][np.where(data[:, -1] == 1)]$/;"	variable	line:409
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 19][np.where(data[:, -1] == 0)]$/;"	variable	line:415
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 19][np.where(data[:, -1] == 1)]$/;"	variable	line:416
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 20][np.where(data[:, -1] == 0)]$/;"	variable	line:422
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 20][np.where(data[:, -1] == 1)]$/;"	variable	line:423
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 21][np.where(data[:, -1] == 0)]$/;"	variable	line:429
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 21][np.where(data[:, -1] == 1)]$/;"	variable	line:430
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 22][np.where(data[:, -1] == 0)]$/;"	variable	line:436
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 22][np.where(data[:, -1] == 1)]$/;"	variable	line:437
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 23][np.where(data[:, -1] == 0)]$/;"	variable	line:443
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 23][np.where(data[:, -1] == 1)]$/;"	variable	line:444
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 24][np.where(data[:, -1] == 0)]$/;"	variable	line:450
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 24][np.where(data[:, -1] == 1)]$/;"	variable	line:451
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 25][np.where(data[:, -1] == 0)]$/;"	variable	line:457
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 25][np.where(data[:, -1] == 1)]$/;"	variable	line:458
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 26][np.where(data[:, -1] == 0)]$/;"	variable	line:464
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 26][np.where(data[:, -1] == 1)]$/;"	variable	line:465
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 27][np.where(data[:, -1] == 0)]$/;"	variable	line:471
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 27][np.where(data[:, -1] == 1)]$/;"	variable	line:472
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 28][np.where(data[:, -1] == 0)]$/;"	variable	line:478
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 28][np.where(data[:, -1] == 1)]$/;"	variable	line:479
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 29][np.where(data[:, -1] == 0)]$/;"	variable	line:485
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 29][np.where(data[:, -1] == 1)]$/;"	variable	line:486
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 30][np.where(data[:, -1] == 0)]$/;"	variable	line:492
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 30][np.where(data[:, -1] == 1)]$/;"	variable	line:493
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 31][np.where(data[:, -1] == 0)]$/;"	variable	line:499
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 31][np.where(data[:, -1] == 1)]$/;"	variable	line:500
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 32][np.where(data[:, -1] == 0)]$/;"	variable	line:506
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 32][np.where(data[:, -1] == 1)]$/;"	variable	line:507
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 33][np.where(data[:, -1] == 0)]$/;"	variable	line:513
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 33][np.where(data[:, -1] == 1)]$/;"	variable	line:514
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 34][np.where(data[:, -1] == 0)]$/;"	variable	line:520
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 34][np.where(data[:, -1] == 1)]$/;"	variable	line:521
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 35][np.where(data[:, -1] == 0)]$/;"	variable	line:527
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 35][np.where(data[:, -1] == 1)]$/;"	variable	line:528
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 36][np.where(data[:, -1] == 0)]$/;"	variable	line:534
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 36][np.where(data[:, -1] == 1)]$/;"	variable	line:535
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 37][np.where(data[:, -1] == 0)]$/;"	variable	line:541
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 37][np.where(data[:, -1] == 1)]$/;"	variable	line:542
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 38][np.where(data[:, -1] == 0)]$/;"	variable	line:548
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 38][np.where(data[:, -1] == 1)]$/;"	variable	line:549
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 39][np.where(data[:, -1] == 0)]$/;"	variable	line:555
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 39][np.where(data[:, -1] == 1)]$/;"	variable	line:556
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 40][np.where(data[:, -1] == 0)]$/;"	variable	line:562
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 40][np.where(data[:, -1] == 1)]$/;"	variable	line:563
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 41][np.where(data[:, -1] == 0)]$/;"	variable	line:570
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 41][np.where(data[:, -1] == 1)]$/;"	variable	line:571
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 42][np.where(data[:, -1] == 0)]$/;"	variable	line:577
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 42][np.where(data[:, -1] == 1)]$/;"	variable	line:578
-notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 43][np.where(data[:, -1] == 0)]$/;"	variable	line:584
-delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 43][np.where(data[:, -1] == 1)]$/;"	variable	line:585
-data	/Users/kitamurataku/work/svm/svm.py	/^data = np.c_[$/;"	variable	line:592
-little_label_number	/Users/kitamurataku/work/svm/svm.py	/^little_label_number = unique[np.argmin(count)]$/;"	variable	line:651
-many_label_number	/Users/kitamurataku/work/svm/svm.py	/^many_label_number = unique[np.argmax(count)]$/;"	variable	line:652
-litte_data	/Users/kitamurataku/work/svm/svm.py	/^litte_data = data[np.where(data[:, -1] == little_label_number)]$/;"	variable	line:657
-many_data	/Users/kitamurataku/work/svm/svm.py	/^many_data = data[np.where(data[:, -1] == many_label_number)]$/;"	variable	line:658
-data	/Users/kitamurataku/work/svm/svm.py	/^data = np.r_[litte_data, many_data[0:len(litte_data)]]$/;"	variable	line:660
+Flask	/Users/kitamurataku/work/svm/svm.py	/^from flask import Flask, jsonify, abort, make_response, request$/;"	namespace	line:10
+jsonify	/Users/kitamurataku/work/svm/svm.py	/^from flask import Flask, jsonify, abort, make_response, request$/;"	namespace	line:10
+abort	/Users/kitamurataku/work/svm/svm.py	/^from flask import Flask, jsonify, abort, make_response, request$/;"	namespace	line:10
+make_response	/Users/kitamurataku/work/svm/svm.py	/^from flask import Flask, jsonify, abort, make_response, request$/;"	namespace	line:10
+request	/Users/kitamurataku/work/svm/svm.py	/^from flask import Flask, jsonify, abort, make_response, request$/;"	namespace	line:10
+datetime	/Users/kitamurataku/work/svm/svm.py	/^import datetime$/;"	namespace	line:11
+return_kernel_estimator	/Users/kitamurataku/work/svm/svm.py	/^def return_kernel_estimator(data):$/;"	function	line:14
+return_input_fn	/Users/kitamurataku/work/svm/svm.py	/^def return_input_fn(train_data, evaluate_data, predict_data):$/;"	function	line:31
+input_fn_train	/Users/kitamurataku/work/svm/svm.py	/^    def input_fn_train():$/;"	function	line:33	function:return_input_fn
+input_fn_evaluate	/Users/kitamurataku/work/svm/svm.py	/^    def input_fn_evaluate():$/;"	function	line:41	function:return_input_fn
+input_fn_predict	/Users/kitamurataku/work/svm/svm.py	/^    def input_fn_predict():$/;"	function	line:50	function:return_input_fn
+cross_validation_estimate	/Users/kitamurataku/work/svm/svm.py	/^def cross_validation_estimate(data, train_steps, evaluate_steps, block_number):$/;"	function	line:77
+api	/Users/kitamurataku/work/svm/svm.py	/^api = Flask(__name__)$/;"	variable	line:154
+show_learnig_graph	/Users/kitamurataku/work/svm/svm.py	/^def show_learnig_graph(data, division_number):$/;"	function	line:157
+predict	/Users/kitamurataku/work/svm/svm.py	/^def predict(analysis_data, predict_data, train_steps, evaluate_steps):$/;"	function	line:199
+get_user	/Users/kitamurataku/work/svm/svm.py	/^    def get_user(choiceTimeID):$/;"	function	line:243	function:predict
+data	/Users/kitamurataku/work/svm/svm.py	/^data = np.array($/;"	variable	line:302
+data	/Users/kitamurataku/work/svm/svm.py	/^data = np.c_[$/;"	variable	line:648
