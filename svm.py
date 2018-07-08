@@ -223,8 +223,8 @@ def predict(analysis_data, predict_data, train_steps, evaluate_steps):
 
     predict_results = list(estimator.predict(input_fn=input_fn_predict))
     print(predict_results)
-    logits = np.average(predict_results[0]["logits"])
-    probabilities = np.average(predict_results[0]["probabilities"])
+    logits = predict_results[0]["logits"][0]
+    probabilities = predict_results[0]["probabilities"][0]
     classes = predict_results[0]["classes"]
 
     print('Classes is {0}'.format(classes))
@@ -232,7 +232,7 @@ def predict(analysis_data, predict_data, train_steps, evaluate_steps):
     print('Logits is {0}'.format(logits))
 
     with tf.Session():
-        print('Probabilities is {0}'.format(probabilities))
+        print('Delay probabilities is {0}'.format(probabilities))
 
 # Warning非表示
 # 参考: https://qiita.com/KEINOS/items/4c66eeda4347f8c13abb
@@ -583,6 +583,7 @@ data = np.array(
 
 
 np.random.shuffle(data)
+print(data.shape)
 
 little_label_number = 1
 many_label_number = 0
@@ -590,9 +591,9 @@ many_label_number = 0
 litte_data = data[np.where(data[:, -1] == little_label_number)]
 many_data = data[np.where(data[:, -1] == many_label_number)]
 
-data = np.r_[litte_data, many_data]#[0:len(litte_data)*4]])
+data = np.r_[litte_data, many_data[0:len(litte_data)]]
 
-print(data.shape)
+print(data[np.where(data[:, -1] == 1)].shape)
 print(data[np.where(data[:, -1] == 0)].shape)
 
 # sm = SMOTE()
@@ -611,4 +612,4 @@ print(data[np.where(data[:, -1] == 0)].shape)
 # print(data)
 
 # show_learnig_graph(data, 10)
-predict(data, [[2016,12,14,8,13.5,1.5,3,3,4.5,4,5,2.2,1.8,2,0.9,0,0,7.7,0,17.1,0,0,9.4,7,20.7,0,0,4.5,1,8.6,0,7,6.7,10.8,2.8,6.9,11.9,2.6,7.4,10.5,3.9,0.5,1,0.5]], 2000, 100)
+predict(data, [[2017,3,15,16,22,3,2,3.5,1,5.8,3.6,2.9,4.7,2.9,2.5,0,0,10.3,7,18.5,6,7,8.7,6,24,6,6,6.4,7,15.5,6,6,5.6,8.4,2.7,5.6,8.1,2.1,5.7,9,2.9,1.5,1.5,1,1]], 2000, 100)
