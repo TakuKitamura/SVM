@@ -11,10 +11,11 @@ from imblearn.over_sampling import SMOTE
 
 def return_kernel_estimator(data):
     optimizer = tf.train.FtrlOptimizer(
-        learning_rate=0.0001, l1_regularization_strength=15.0, l2_regularization_strength=15.0)
+        # learning_rate大きくすると過学習
+        learning_rate=10.0, l1_regularization_strength=1, l2_regularization_strength=1)
 
     kernel_mapper = tf.contrib.kernel_methods.RandomFourierFeatureMapper(
-        input_dim=data.shape[1]-1, output_dim=1, stddev=1, name='rffm')
+        input_dim=data.shape[1]-1, output_dim=1, stddev=5, name='rffm')
 
     kernel_mappers = {
         tf.contrib.layers.real_valued_column('feature'): [kernel_mapper]}
@@ -590,23 +591,23 @@ plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], 
 # plt.show()
 
 data = np.c_[
-    data[:, 0], # 年
+    # data[:, 0], # 年
     data[:, 1], # 月
-    data[:, 2], # 日付
-    data[:, 3], # 今津降水量の合計(mm)
-    data[:, 4], # 南小松降水量の合計(mm)
-    data[:, 5], # 大津降水量の合計(mm)
-    data[:, 6], # 今津1時間降水量の最大(mm)
-    data[:, 7], # 南小松1時間降水量の最大(mm)
-    data[:, 8], # 大津1時間降水量の最大(mm)
+    # data[:, 2], # 日付
+    # data[:, 3], # 今津降水量の合計(mm)
+    # data[:, 4], # 南小松降水量の合計(mm)
+    # data[:, 5], # 大津降水量の合計(mm)
+    # data[:, 6], # 今津1時間降水量の最大(mm)
+    # data[:, 7], # 南小松1時間降水量の最大(mm)
+    # data[:, 8], # 大津1時間降水量の最大(mm)
     data[:, 9], # 今津平均風速(m/s)
     data[:, 10],# 南小松平均風速(m/s)
     data[:, 11],# 大津平均風速(m/s)
-    data[:, 12],# 今津日照時間(時間)
-    data[:, 13],# 南小松日照時間(時間)
-    data[:, 14],# 大津日照時間(時間)
-    data[:, 15],# 今津最深積雪(cm)
-    data[:, 16],# 今津降雪量合計(cm)
+    # data[:, 12],# 今津日照時間(時間)
+    # data[:, 13],# 南小松日照時間(時間)
+    # data[:, 14],# 大津日照時間(時間)
+    # data[:, 15],# 今津最深積雪(cm)
+    # data[:, 16],# 今津降雪量合計(cm)
     data[:, 17],# 今津最大風速(m/s)
     data[:, 18],# 今津最大風速方角(m/s)
     data[:, 19],# 今津最大瞬間風速(m/s)
@@ -622,18 +623,18 @@ data = np.c_[
     data[:, 29],# 大津最大瞬間風速(m/s)
     data[:, 30],# 大津最大瞬間風速方角(m/s)
     data[:, 31],# 大津最多風向(16方位)
-    data[:, 32],# 今津平均気温(℃)
-    data[:, 33],# 今津最高気温(℃)
-    data[:, 34],# 今津最低気温(℃)
-    data[:, 35],# 南小松平均気温(℃)
-    data[:, 36],# 南小松最高気温(℃)
-    data[:, 37],# 南小松最低気温(℃)
-    data[:, 38],# 大津平均気温(℃)
-    data[:, 39],# 大津最高気温(℃)
-    data[:, 40],# 大津最低気温(℃)
-    data[:, 41],# 今津10分間降水量の最大(mm)
-    data[:, 42],# 南小松10分間降水量の最大(mm)
-    data[:, 43],# 大津10分間降水量の最大(mm)
+    # data[:, 32],# 今津平均気温(℃)
+    # data[:, 33],# 今津最高気温(℃)
+    # data[:, 34],# 今津最低気温(℃)
+    # data[:, 35],# 南小松平均気温(℃)
+    # data[:, 36],# 南小松最高気温(℃)
+    # data[:, 37],# 南小松最低気温(℃)
+    # data[:, 38],# 大津平均気温(℃)
+    # data[:, 39],# 大津最高気温(℃)
+    # data[:, 40],# 大津最低気温(℃)
+    # data[:, 41],# 今津10分間降水量の最大(mm)
+    # data[:, 42],# 南小松10分間降水量の最大(mm)
+    # data[:, 43],# 大津10分間降水量の最大(mm)
     data[:, 44],# 月の前半かフラグ(前半0)
     data[:, 45],# 遅延フラグ(遅延1)
 ]
@@ -657,10 +658,10 @@ many_label_number = unique[np.argmax(count)]
 litte_data = data[np.where(data[:, -1] == little_label_number)]
 many_data = data[np.where(data[:, -1] == many_label_number)]
 
-data = np.r_[litte_data, many_data[0:len(litte_data)]]
+data = np.r_[litte_data, many_data[0:int(len(litte_data))]]
 
 print(len(litte_data))
-print(len(many_data[0:len(litte_data)]))
+print(len(many_data[0:int(len(litte_data))]))
 
 # sm = SMOTE()
 # features, labels = sm.fit_sample(data[:, 0:-1], data[:, -1])
