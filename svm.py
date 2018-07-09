@@ -239,8 +239,15 @@ def predict(analysis_data, predict_data, train_steps, evaluate_steps):
     with tf.Session():
         print('Delay probabilities is {0}'.format(probabilities))
 
+    @api.route("/")
+    def home():
+        resp = Flask.Response("Foo bar baz")
+        resp.headers['Access-Control-Allow-Origin'] = '*'
+        return resp
+
     @api.route('/predictKoseiLineDelay/<int:choiceTimeID>', methods=['GET'])
     def get_user(choiceTimeID):
+        # resp.headers['Access-Control-Allow-Origin'] = '*'
         choiceTimeID
         responseText = ""
         if choiceTimeID == 1:
@@ -283,9 +290,10 @@ def predict(analysis_data, predict_data, train_steps, evaluate_steps):
         #     return make_response(jsonify(result))
 
         responseText += "遅延する可能性は" + str(delay_probabilities) + " %です。"
-
         result = {"responseText": responseText}
-        return make_response(jsonify(result))
+        resp = make_response(jsonify(result), 200)
+        resp.headers.extend({'Access-Control-Allow-Origin': '*'})
+        return resp
 
     api.run(host='localhost', port=3000)
 
