@@ -27,5 +27,5 @@ api	/Users/kitamurataku/work/svm/svm.py	/^api = Flask(__name__)$/;"	variable	lin
 show_learnig_graph	/Users/kitamurataku/work/svm/svm.py	/^def show_learnig_graph(data, division_number):$/;"	function	line:157
 predict	/Users/kitamurataku/work/svm/svm.py	/^def predict(analysis_data, predict_data, train_steps, evaluate_steps):$/;"	function	line:199
 get_user	/Users/kitamurataku/work/svm/svm.py	/^    def get_user(choiceTimeID):$/;"	function	line:243	function:predict
-data	/Users/kitamurataku/work/svm/svm.py	/^data = np.array($/;"	variable	line:302
-data	/Users/kitamurataku/work/svm/svm.py	/^data = np.c_[$/;"	variable	line:648
+data	/Users/kitamurataku/work/svm/svm.py	/^data = np.array($/;"	variable	line:304
+data	/Users/kitamurataku/work/svm/svm.py	/^data = np.c_[$/;"	variable	line:650

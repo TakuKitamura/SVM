@@ -267,20 +267,22 @@ def predict(analysis_data, predict_data, train_steps, evaluate_steps):
 
         predict_results = list(estimator.predict(input_fn=input_fn_predict))
         print(predict_results)
-        delay_probabilities = predict_results[0]["probabilities"][1]
+        delay_probabilities = round(predict_results[0]["probabilities"][1] * 100, 2)
 
-        if delay_probabilities * 100 < 20:
-            responseText += "遅延する可能性はかなり低いです。"
-        elif delay_probabilities * 100 < 40:
-            responseText += "遅延する可能性は低いです。"
-        elif delay_probabilities * 100 < 60:
-            responseText += "遅延する可能性が有ります。"
-        elif delay_probabilities * 100 <= 100:
-            responseText += "遅延する可能性が高いです。"
-        else:
-            responseText = "不具合が発生しております。復旧まで居間しばらくお待ち下さい。"
-            result = {"responseText": responseText}
-            return make_response(jsonify(result))
+        # if delay_probabilities * 100 < 20:
+        #     responseText += "遅延する可能性はかなり低いです。"
+        # elif delay_probabilities * 100 < 40:
+        #     responseText += "遅延する可能性は低いです。"
+        # elif delay_probabilities * 100 < 60:
+        #     responseText += "遅延する可能性が有ります。"
+        # elif delay_probabilities * 100 <= 100:
+        #     responseText += "遅延する可能性が高いです。"
+        # else:
+        #     responseText = "不具合が発生しております。復旧まで居間しばらくお待ち下さい。"
+        #     result = {"responseText": responseText}
+        #     return make_response(jsonify(result))
+
+        responseText += "遅延する可能性は" + str(delay_probabilities) + " %です。"
 
         result = {"responseText": responseText}
         return make_response(jsonify(result))
