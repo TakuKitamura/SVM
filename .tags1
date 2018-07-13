@@ -26,6 +26,9 @@ cross_validation_estimate	/Users/kitamurataku/work/svm/svm.py	/^def cross_valida
 api	/Users/kitamurataku/work/svm/svm.py	/^api = Flask(__name__)$/;"	variable	line:154
 show_learnig_graph	/Users/kitamurataku/work/svm/svm.py	/^def show_learnig_graph(data, division_number):$/;"	function	line:157
 predict	/Users/kitamurataku/work/svm/svm.py	/^def predict(analysis_data, predict_data, train_steps, evaluate_steps):$/;"	function	line:199
-get_user	/Users/kitamurataku/work/svm/svm.py	/^    def get_user(choiceTimeID):$/;"	function	line:243	function:predict
-data	/Users/kitamurataku/work/svm/svm.py	/^data = np.array($/;"	variable	line:304
-data	/Users/kitamurataku/work/svm/svm.py	/^data = np.c_[$/;"	variable	line:650
+home	/Users/kitamurataku/work/svm/svm.py	/^    def home():$/;"	function	line:243	function:predict
+get_user	/Users/kitamurataku/work/svm/svm.py	/^    def get_user(choiceTimeID):$/;"	function	line:249	function:predict
+data	/Users/kitamurataku/work/svm/svm.py	/^data = np.array($/;"	variable	line:312
+notDelay	/Users/kitamurataku/work/svm/svm.py	/^notDelay = data[:, 24][np.where(data[:, -1] == 0)]$/;"	variable	line:514
+delay	/Users/kitamurataku/work/svm/svm.py	/^delay = data[:, 24][np.where(data[:, -1] == 1)]$/;"	variable	line:515
+data	/Users/kitamurataku/work/svm/svm.py	/^data = np.c_[$/;"	variable	line:661

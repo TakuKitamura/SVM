@@ -105,3 +105,4 @@ venv.bak/
 
 # 追加
 .tags
+*.csv
