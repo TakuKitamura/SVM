@@ -7,8 +7,8 @@ from sklearn import preprocessing as pr
 
 from matplotlib import pyplot as plt
 from imblearn.over_sampling import SMOTE
-from flask import Flask, jsonify, abort, make_response, request
-import datetime
+# from flask import Flask, jsonify, abort, make_response, request
+# import datetime
 
 
 def return_kernel_estimator(data):
@@ -151,8 +151,6 @@ def cross_validation_estimate(data, train_steps, evaluate_steps, block_number):
 
     return evaluate_average_loss, evaluate_average_accuracy, test_average_loss, test_average_accuracy
 
-api = Flask(__name__)
-
 
 def show_learnig_graph(data, division_number):
     target_data_length_x = np.array([])
@@ -236,67 +234,8 @@ def predict(analysis_data, predict_data, train_steps, evaluate_steps):
 
     print('Logits is {0}'.format(logits))
 
-    with tf.Session():
-        print('Delay probabilities is {0}'.format(probabilities))
-
-    @api.route("/")
-    def home():
-        resp = Flask.Response("Foo bar baz")
-        resp.headers['Access-Control-Allow-Origin'] = '*'
-        return resp
-
-    @api.route('/predictKoseiLineDelay/<int:choiceTimeID>', methods=['GET'])
-    def get_user(choiceTimeID):
-        # resp.headers['Access-Control-Allow-Origin'] = '*'
-        choiceTimeID
-        responseText = ""
-        if choiceTimeID == 1:
-            responseText += "今日の朝の湖西線が、"
-        elif choiceTimeID == 2:
-            responseText += "今日の昼の湖西線が、"
-        elif choiceTimeID == 3:
-            responseText += "今日の夕方の湖西線が、"
-        elif choiceTimeID == 4:
-            responseText += "明日の朝の湖西線が、"
-        elif choiceTimeID == 5:
-            responseText += "明日の昼の湖西線が、"
-        elif choiceTimeID == 6:
-            responseText += "明日の夕方の湖西線が、"
-        else:
-            responseText = "不具合が発生しております。復旧まで居間しばらくお待ち下さい。"
-            result = {"responseText": responseText}
-            return make_response(jsonify(result))
-
-        today = datetime.date.today()
-        predict_data = np.array([np.average(analysis_data[np.where(analysis_data[:, 1] == today.month)], axis = 0)], dtype = 'float32')[:,0:-1]
-        print(predict_data)
-        _, _, input_fn_predict = return_input_fn(None, None, predict_data)
-
-        predict_results = list(estimator.predict(input_fn=input_fn_predict))
-        print(predict_results)
-        delay_probabilities = round(predict_results[0]["probabilities"][1] * 100, 2)
-
-        # if delay_probabilities * 100 < 20:
-        #     responseText += "遅延する可能性はかなり低いです。"
-        # elif delay_probabilities * 100 < 40:
-        #     responseText += "遅延する可能性は低いです。"
-        # elif delay_probabilities * 100 < 60:
-        #     responseText += "遅延する可能性が有ります。"
-        # elif delay_probabilities * 100 <= 100:
-        #     responseText += "遅延する可能性が高いです。"
-        # else:
-        #     responseText = "不具合が発生しております。復旧まで居間しばらくお待ち下さい。"
-        #     result = {"responseText": responseText}
-        #     return make_response(jsonify(result))
-
-        responseText += "遅延する可能性は" + str(delay_probabilities) + " %です。"
-        result = {"responseText": responseText}
-        resp = make_response(jsonify(result), 200)
-        resp.headers.extend({'Access-Control-Allow-Origin': '*'})
-        return resp
-
-    api.run(host='localhost', port=3000)
-
+    # with tf.Session():
+    #     print('Delay probabilities is {0}'.format(probabilities))
 
 # Warning非表示
 # 参考: https://qiita.com/KEINOS/items/4c66eeda4347f8c13abb
@@ -310,401 +249,24 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 # np.set_printoptions(threshold=5000)
 
 data = np.array(
-    np.loadtxt("/Users/kitamurataku/work/svm/new_data.csv", delimiter=",", skiprows=1), "float64")
-
-
-
-### 横軸:月、縦軸:遅延回数の棒グラフ
-# notDelay = data[:, 1][np.where(data[:, -1] == 0)]
-# delay = data[:, 1][np.where(data[:, -1] == 1)]
-#
-# plt.figure(1)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-
-### 横軸:月、縦軸:遅延回数の棒グラフ(月前半)
-# month = np.arange(12) + 1
-# delayFlagCount = np.zeros(12, dtype=int)
-# for i in month:
-#     delayFlagCount[i - 1] = np.sum((data[:, 1] == i) & (data[:, -1] == 1) & (data[:, 2] <= 15))
-# # print(np.sum(delayFlagCount))
-#
-# plt.figure(2)
-# plt.bar(month, delayFlagCount)
-
-### 横軸:月、縦軸:遅延回数の棒グラフ(月後半)
-# month = np.arange(12) + 1
-# delayFlagCount = np.zeros(12, dtype=int)
-# for i in month:
-#     delayFlagCount[i - 1] = np.sum((data[:, 1] == i) & (data[:, -1] == 1) & (data[:, 2] > 15))
-# print(np.sum(delayFlagCount))
-#
-# plt.figure(3)
-# plt.bar(month, delayFlagCount)
-
-
-#
-# ###降水量の合計
-# # bottom = np.array(data[:, 6][np.where(data[:, 6] < 150)])
-# # print(bottom)
-# # print(data[:, -1] == 0)
-# # plt.bar(bottom, data[:, -1][np.where(data[:, 6] < 150)] == 0, color='r', alpha=0.1)
-# # plt.bar(bottom, data[:, -1][np.where(data[:, 6] < 150)] == 1, color='b', alpha=0.1)
-# # plt.show()
-#
-# ###今津降水量の合計
-# notDelay = data[:, 3][np.where(data[:, -1] == 0)]
-# delay = data[:, 3][np.where(data[:, -1] == 1)]
-# plt.figure(4)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-#
-#
-#
-# ###南小松降水量の合計
-# notDelay = data[:, 4][np.where(data[:, -1] == 0)]
-# delay = data[:, 4][np.where(data[:, -1] == 1)]
-#
-# plt.figure(5)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-#
-#
-#
-# ###大津降水量の合計
-# notDelay = data[:, 5][np.where(data[:, -1] == 0)]
-# delay = data[:, 5][np.where(data[:, -1] == 1)]
-# plt.figure(6)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-#
-#
-# ###今津1時間降水量の最大
-# notDelay = data[:, 6][np.where(data[:, -1] == 0)]
-# delay = data[:, 6][np.where(data[:, -1] == 1)]
-# plt.figure(7)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-# # plt.show()
-#
-# ###南小松1時間降水量の最大
-# notDelay = data[:, 7][np.where(data[:, -1] == 0)]
-# delay = data[:, 7][np.where(data[:, -1] == 1)]
-# plt.figure(8)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-# # plt.show()
-#
-# ###大津1時間降水量の最大
-# notDelay = data[:, 8][np.where(data[:, -1] == 0)]
-# delay = data[:, 8][np.where(data[:, -1] == 1)]
-# plt.figure(9)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-# # plt.show()
-#
-#
-# ###平均風速
-# # bottom = np.array(data[:, 8])
-# # print(bottom)
-# # print(data[:, -1] == 0)
-# # plt.bar(bottom, data[:, -1] == 0, color='r', alpha=0.1)
-# # plt.bar(bottom, data[:, -1] == 1, color='b', alpha=0.1)
-# # plt.show()
-#
-# ###今津平均風速
-# notDelay = data[:, 9][np.where(data[:, -1] == 0)]
-# delay = data[:, 9][np.where(data[:, -1] == 1)]
-# plt.figure(10)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-# # plt.show()
-#
-# ###南小松平均風速
-# notDelay = data[:, 10][np.where(data[:, -1] == 0)]
-# delay = data[:, 10][np.where(data[:, -1] == 1)]
-# plt.figure(11)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-# # plt.show()
-#
-# ###大津平均風速
-# notDelay = data[:, 11][np.where(data[:, -1] == 0)]
-# delay = data[:, 11][np.where(data[:, -1] == 1)]
-# plt.figure(12)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-# # plt.show()
-#
-# ###今津日照時間
-# notDelay = data[:, 12][np.where(data[:, -1] == 0)]
-# delay = data[:, 12][np.where(data[:, -1] == 1)]
-# plt.figure(13)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-# # plt.show()
-#
-# ###南小松日照時間
-# notDelay = data[:, 13][np.where(data[:, -1] == 0)]
-# delay = data[:, 13][np.where(data[:, -1] == 1)]
-# plt.figure(14)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-# # plt.show()
-#
-# ###大津日照時間
-# notDelay = data[:, 14][np.where(data[:, -1] == 0)]
-# delay = data[:, 14][np.where(data[:, -1] == 1)]
-# plt.figure(15)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-# # plt.show()
-#
-# ###今津最深積雪
-# notDelay = data[:, 15][np.where(data[:, -1] == 0)]
-# delay = data[:, 15][np.where(data[:, -1] == 1)]
-# plt.figure(16)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-# # plt.show()
-#
-# ###今津降雪量合計
-# notDelay = data[:, 16][np.where(data[:, -1] == 0)]
-# delay = data[:, 16][np.where(data[:, -1] == 1)]
-# plt.figure(17)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-# # plt.show()
-#
-# ###今津最大風速
-# notDelay = data[:, 17][np.where(data[:, -1] == 0)]
-# delay = data[:, 17][np.where(data[:, -1] == 1)]
-# plt.figure(18)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-# # plt.show()
-#
-# ###今津最大風速方角
-# notDelay = data[:, 18][np.where(data[:, -1] == 0)]
-# delay = data[:, 18][np.where(data[:, -1] == 1)]
-# plt.figure(19)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-# # plt.show()
-#
-###今津最大瞬間風速
-# notDelay = data[:, 19][np.where(data[:, -1] == 0)]
-# delay = data[:, 19][np.where(data[:, -1] == 1)]
-# plt.figure(20)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-# plt.show()
-#
-# ###今津最大瞬間風速方角
-# notDelay = data[:, 20][np.where(data[:, -1] == 0)]
-# delay = data[:, 20][np.where(data[:, -1] == 1)]
-# plt.figure(21)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-# # plt.show()
-#
-# ###今津最多風向
-# notDelay = data[:, 21][np.where(data[:, -1] == 0)]
-# delay = data[:, 21][np.where(data[:, -1] == 1)]
-# plt.figure(22)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-# # plt.show()
-#
-# ###南小松最大風速
-# notDelay = data[:, 22][np.where(data[:, -1] == 0)]
-# delay = data[:, 22][np.where(data[:, -1] == 1)]
-# plt.figure(23)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-# # plt.show()
-#
-# ###南小松最大風速
-# notDelay = data[:, 23][np.where(data[:, -1] == 0)]
-# delay = data[:, 23][np.where(data[:, -1] == 1)]
-# plt.figure(24)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-# # plt.show()
-#
-# ###南小松最大瞬間風速
-notDelay = data[:, 24][np.where(data[:, -1] == 0)]
-delay = data[:, 24][np.where(data[:, -1] == 1)]
-plt.figure(25)
-# plt.title("南小松最大瞬間風速と湖西線遅延回数の関係")
-# plt.xlabel("南小松最大瞬間風速")
-# plt.ylabel("湖西線遅延回数")
-plt.hist([notDelay, delay],bins=50, color=['orange', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=False)
-# plt.show()
-#
-# ###南小松最大瞬間風速方角
-# notDelay = data[:, 25][np.where(data[:, -1] == 0)]
-# delay = data[:, 25][np.where(data[:, -1] == 1)]
-# plt.figure(26)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-# # plt.show()
-#
-# ###南小松最多風向
-# notDelay = data[:, 26][np.where(data[:, -1] == 0)]
-# delay = data[:, 26][np.where(data[:, -1] == 1)]
-# plt.figure(27)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-# # plt.show()
-#
-# ###大津最大風速
-# notDelay = data[:, 27][np.where(data[:, -1] == 0)]
-# delay = data[:, 27][np.where(data[:, -1] == 1)]
-# plt.figure(28)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-# # plt.show()
-#
-# ###大津最大風速方角
-# notDelay = data[:, 28][np.where(data[:, -1] == 0)]
-# delay = data[:, 28][np.where(data[:, -1] == 1)]
-# plt.figure(29)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-# # plt.show()
-#
-###大津最大瞬間風速
-# notDelay = data[:, 29][np.where(data[:, -1] == 0)]
-# delay = data[:, 29][np.where(data[:, -1] == 1)]
-# plt.figure(30)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-# plt.show()
-#
-# ###大津最大瞬間風速方角
-# notDelay = data[:, 30][np.where(data[:, -1] == 0)]
-# delay = data[:, 30][np.where(data[:, -1] == 1)]
-# plt.figure(31)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-# # plt.show()
-#
-# ###大津最多風向
-# notDelay = data[:, 31][np.where(data[:, -1] == 0)]
-# delay = data[:, 31][np.where(data[:, -1] == 1)]
-# plt.figure(32)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-# # plt.show()
-#
-# ###今津平均気温
-# notDelay = data[:, 32][np.where(data[:, -1] == 0)]
-# delay = data[:, 32][np.where(data[:, -1] == 1)]
-# plt.figure(33)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-# # plt.show()
-#
-# ###今津最高気温
-# notDelay = data[:, 33][np.where(data[:, -1] == 0)]
-# delay = data[:, 33][np.where(data[:, -1] == 1)]
-# plt.figure(34)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-# # plt.show()
-#
-# ###今津最低気温
-# notDelay = data[:, 34][np.where(data[:, -1] == 0)]
-# delay = data[:, 34][np.where(data[:, -1] == 1)]
-# plt.figure(35)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-# # plt.show()
-#
-# ###南小松平均気温
-# notDelay = data[:, 35][np.where(data[:, -1] == 0)]
-# delay = data[:, 35][np.where(data[:, -1] == 1)]
-# plt.figure(36)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-# # plt.show()
-#
-# ###南小松最高気温
-# notDelay = data[:, 36][np.where(data[:, -1] == 0)]
-# delay = data[:, 36][np.where(data[:, -1] == 1)]
-# plt.figure(37)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-# # plt.show()
-#
-# ###南小松最低気温
-# notDelay = data[:, 37][np.where(data[:, -1] == 0)]
-# delay = data[:, 37][np.where(data[:, -1] == 1)]
-# plt.figure(38)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-# # plt.show()
-#
-# ###大津平均気温
-# notDelay = data[:, 38][np.where(data[:, -1] == 0)]
-# delay = data[:, 38][np.where(data[:, -1] == 1)]
-# plt.figure(39)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-# # plt.show()
-#
-# ###大津最高気温
-# notDelay = data[:, 39][np.where(data[:, -1] == 0)]
-# delay = data[:, 39][np.where(data[:, -1] == 1)]
-# plt.figure(40)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-# # plt.show()
-#
-# ###大津最低気温
-# notDelay = data[:, 40][np.where(data[:, -1] == 0)]
-# delay = data[:, 40][np.where(data[:, -1] == 1)]
-# plt.figure(41)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-# # plt.show()
-#
-#
-# ###今津10分間降水量の最大
-# notDelay = data[:, 41][np.where(data[:, -1] == 0)]
-# delay = data[:, 41][np.where(data[:, -1] == 1)]
-# plt.figure(42)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-# # plt.show()
-#
-# ###南小松10分間降水量の最大
-# notDelay = data[:, 42][np.where(data[:, -1] == 0)]
-# delay = data[:, 42][np.where(data[:, -1] == 1)]
-# plt.figure(43)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-# # plt.show()
-
-###大津10分間降水量の最大
-# notDelay = data[:, 43][np.where(data[:, -1] == 0)]
-# delay = data[:, 43][np.where(data[:, -1] == 1)]
-# plt.figure(44)
-# plt.hist([notDelay, delay], bins=50, color=['red', 'blue'], label=['x1', 'x2'], histtype='bar', stacked=True)
-# plt.show()
-
-plt.show()
-
-
+    np.loadtxt("/Users/kitamurataku/work/svm/toyota.csv", delimiter="	", skiprows=1), "float64")
 
 data = np.c_[
-    data[:, 0], # 年
-    data[:, 1], # 月
-    data[:, 2], # 日付
-    data[:, 3], # 今津降水量の合計(mm)
-    data[:, 4], # 南小松降水量の合計(mm)
-    data[:, 5], # 大津降水量の合計(mm)
-    data[:, 6], # 今津1時間降水量の最大(mm)
-    data[:, 7], # 南小松1時間降水量の最大(mm)
-    data[:, 8], # 大津1時間降水量の最大(mm)
-    data[:, 9], # 今津平均風速(m/s)
-    data[:, 10],# 南小松平均風速(m/s)
-    data[:, 11],# 大津平均風速(m/s)
-    data[:, 12],# 今津日照時間(時間)
-    data[:, 13],# 南小松日照時間(時間)
-    data[:, 14],# 大津日照時間(時間)
-    data[:, 15],# 今津最深積雪(cm)
-    data[:, 16],# 今津降雪量合計(cm)
-    data[:, 17],# 今津最大風速(m/s)
-    data[:, 18],# 今津最大風速方角(m/s)
-    data[:, 19],# 今津最大瞬間風速(m/s)
-    data[:, 20],# 今津最大瞬間風速方角(m/s)
-    data[:, 21],# 今津最多風向(16方位)
-    data[:, 22],# 南小松最大風速(m/s)
-    data[:, 23],# 南小松最大風速方角(m/s)
-    data[:, 24],# 南小松最大瞬間風速(m/s)
-    data[:, 25],# 南小松最大瞬間風速方角(m/s)
-    data[:, 26],# 南小松最多風向(16方位)
-    data[:, 27],# 大津最大風速(m/s)
-    data[:, 28],# 大津最大風速方角(m/s)
-    data[:, 29],# 大津最大瞬間風速(m/s)
-    data[:, 30],# 大津最大瞬間風速方角(m/s)
-    data[:, 31],# 大津最多風向(16方位)
-    data[:, 32],# 今津平均気温(℃)
-    data[:, 33],# 今津最高気温(℃)
-    data[:, 34],# 今津最低気温(℃)
-    data[:, 35],# 南小松平均気温(℃)
-    data[:, 36],# 南小松最高気温(℃)
-    data[:, 37],# 南小松最低気温(℃)
-    data[:, 38],# 大津平均気温(℃)
-    data[:, 39],# 大津最高気温(℃)
-    data[:, 40],# 大津最低気温(℃)
-    data[:, 41],# 今津10分間降水量の最大(mm)
-    data[:, 42],# 南小松10分間降水量の最大(mm)
-    data[:, 43],# 大津10分間降水量の最大(mm)
-    data[:, 44],# 月の前半かフラグ(前半0)
-    data[:, 45],# 遅延フラグ(遅延1)
+    data[:, 0], # 始値
+    data[:, 1], # 高値
+    data[:, 2], # 安値
+    data[:, 3], # 終値
+    data[:, 4], # 取引額
+    data[:, 5], # 値上がり率
+    ### 以下n255
+    data[:, 6], # 始値
+    data[:, 7], # 高値
+    data[:, 8], # 安値
+    data[:, 9], # 終値
+    data[:, 10], # 取引額
+    data[:, 11], # 値上がり率
+    data[:, 12], # n255フラグ(翌日の値上がり率>=0.8 ? 1 : 0)
+    data[:, -1],# 指定株価フラグ(翌日の値上がり率>=1 ? 1 : 0)
 ]
 
 print(data)
@@ -731,10 +293,10 @@ print(data.shape)
 # print(len(litte_data))
 # print(len(many_data[0:int(len(litte_data))]))
 
-# sm = SMOTE()
-# features, labels = sm.fit_sample(data[:, 0:-1], data[:, -1])
+sm = SMOTE()
+features, labels = sm.fit_sample(data[:, 0:-1], data[:, -1])
 
-# data = np.c_[features, labels]
+data = np.c_[features, labels]
 
 # print(data[-1])
 
